@@ -1,0 +1,1 @@
+ALTER TABLE text ALTER COLUMN text_reduced TYPE TEXT;

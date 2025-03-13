@@ -10,7 +10,6 @@ public class TextMapper {
 
     public static Text toText(TextRequest textRequest) {
         return Text.builder()
-                .id(textRequest.id())
                 .text(textRequest.text())
                 .build();
     }

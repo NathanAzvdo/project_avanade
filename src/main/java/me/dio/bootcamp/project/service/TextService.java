@@ -20,8 +20,8 @@ public class TextService {
         this.textRepository = textRepository;
     }
 
-    public Text saveText(String originalText) {
-        String summarizedText = summarizeText(originalText);
+    public Text saveText(String originalText, int lines) {
+        String summarizedText = summarizeText(originalText, lines);
 
         Text text = new Text();
         text.setText(originalText);
@@ -30,14 +30,14 @@ public class TextService {
         return textRepository.save(text);
     }
     public List<Text> findByContent(String text) {
-        return textRepository.findByTextContaining(text);
+        return textRepository.findByTextContainingIgnoreCase(text);
     }
 
     public List<Text> findAll() {
         return textRepository.findAll();
     }
 
-    private String summarizeText(String text) {
+    private String summarizeText(String text, int lines) {
         try (InputStream modelIn = getClass().getResourceAsStream("/models/pt-sent.bin")) {
             if (modelIn == null) {
                 throw new IOException("Modelo de detecção de sentenças não encontrado!");
@@ -48,7 +48,7 @@ public class TextService {
 
             String[] sentences = sentenceDetector.sentDetect(text);
 
-            int maxSentences = Math.min(sentences.length, 2);
+            int maxSentences = Math.min(sentences.length, lines);
             StringBuilder summary = new StringBuilder();
 
             for (int i = 0; i < maxSentences; i++) {
