@@ -1,0 +1,16 @@
+spring:
+    application:
+        name: bootcamp.project
+
+    datasource:
+        url: jdbc:postgresql://localhost:25432/npl_project
+        username: ${DB_USER}
+        password: ${DB_PASS}
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        show-sql: true
+
+    flyway:
+        enabled: true
