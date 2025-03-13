@@ -8,6 +8,7 @@ import me.dio.bootcamp.project.service.TextService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,13 +22,13 @@ public class TextController {
     }
 
     @PostMapping("/save")
-    public TextResponse saveText(@RequestBody  TextRequest textRequest, @RequestParam(defaultValue = "2") int lines) {
+    public TextResponse saveText(@RequestBody TextRequest textRequest, @RequestParam(defaultValue = "2") int lines) {
         Text toText = TextMapper.toText(textRequest);
         Text savedText = textService.saveText(toText.getText(), lines);
         return TextMapper.toTextResponse(savedText);
     }
 
-    @GetMapping("find/content")
+    @GetMapping("/find/content")
     public List<TextResponse> findTextByContent(@RequestBody TextRequest textRequest) {
         Text toText = TextMapper.toText(textRequest);
         List<Text> texts = textService.findByContent(toText.getText());
@@ -36,4 +37,33 @@ public class TextController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/find")
+    public List<TextResponse> findAllTexts() {
+        List<Text> texts = textService.findAll();
+        return texts.stream()
+                .map(TextMapper::toTextResponse)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/find/{id}")
+    public TextResponse findTextById(@PathVariable Long id) {
+        Optional<Text> text = textService.findById(id);
+        if (text.isPresent()) {
+            return TextMapper.toTextResponse(text.get());
+        } else {
+            throw new RuntimeException("Texto não encontrado com o ID: " + id);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public TextResponse updateText(@PathVariable Long id, @RequestBody TextRequest textRequest, @RequestParam(defaultValue = "2") int lines) {
+        Text toText = TextMapper.toText(textRequest);
+        Text updatedText = textService.updateText(id, toText.getText(), lines);
+        return TextMapper.toTextResponse(updatedText);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteText(@PathVariable Long id) {
+        textService.deleteText(id);
+    }
 }
