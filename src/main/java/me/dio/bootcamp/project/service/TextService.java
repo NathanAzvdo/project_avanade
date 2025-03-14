@@ -66,6 +66,10 @@ public class TextService {
         }
     }
 
+    public boolean existsByText(String text) {
+        return !textRepository.findByTextContainingIgnoreCase(text).isEmpty();
+    }
+
 
     private String summarizeText(String text, int lines) {
         try (InputStream modelIn = getClass().getResourceAsStream("/models/pt-sent.bin")) {
@@ -90,4 +94,5 @@ public class TextService {
             throw new RuntimeException("Erro ao carregar modelo OpenNLP", e);
         }
     }
+
 }
