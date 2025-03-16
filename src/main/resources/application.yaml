@@ -14,3 +14,7 @@ spring:
 
     flyway:
         enabled: true
+
+    springdoc:
+        swagger-ui:
+            path: /swagger-ui.html
