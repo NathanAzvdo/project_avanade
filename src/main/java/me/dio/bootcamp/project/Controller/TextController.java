@@ -1,5 +1,12 @@
 package me.dio.bootcamp.project.Controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import me.dio.bootcamp.project.Controller.Mapper.TextMapper;
 import me.dio.bootcamp.project.Controller.Request.TextRequest;
@@ -16,6 +23,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/text")
+@Tag(name = "Text Controller", description = "Endpoints para gerenciar textos")
 public class TextController {
 
     private final TextService textService;
@@ -25,8 +33,15 @@ public class TextController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveText(@Valid @RequestBody TextRequest textRequest,
-                                                 @RequestParam(defaultValue = "2") int lines) {
+    @Operation(summary = "Salvar um novo texto", description = "Salva um novo texto no banco de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Texto salvo com sucesso", content = @Content(schema = @Schema(implementation = TextResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Texto já existe no banco de dados", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao salvar o texto", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> saveText(
+            @Parameter(description = "Dados do texto a ser salvo", required = true) @Valid @RequestBody TextRequest textRequest,
+            @Parameter(description = "Número de linhas", example = "2") @RequestParam(defaultValue = "2") int lines) {
 
         if (textService.existsByText(textRequest.text())) {
             return ResponseEntity.badRequest().body("Texto já existe no banco de dados.");
@@ -38,7 +53,13 @@ public class TextController {
     }
 
     @GetMapping("/find/content")
-    public ResponseEntity<?> findTextByContent(@RequestBody TextRequest textRequest) {
+    @Operation(summary = "Buscar textos por conteúdo", description = "Busca textos que contenham o conteúdo especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Textos encontrados", content = @Content(schema = @Schema(implementation = TextResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao buscar textos", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> findTextByContent(
+            @Parameter(description = "Conteúdo do texto a ser buscado", required = true) @RequestBody TextRequest textRequest) {
         try {
             Text toText = TextMapper.toText(textRequest);
             List<Text> texts = textService.findByContent(toText.getText());
@@ -51,6 +72,11 @@ public class TextController {
     }
 
     @GetMapping("/find")
+    @Operation(summary = "Buscar todos os textos", description = "Busca todos os textos cadastrados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Textos encontrados", content = @Content(schema = @Schema(implementation = TextResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao buscar textos", content = @Content(schema = @Schema(implementation = String.class)))
+    })
     public ResponseEntity<?> findAllTexts() {
         try {
             List<Text> texts = textService.findAll();
@@ -63,7 +89,14 @@ public class TextController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<TextResponse> findTextById(@PathVariable Long id) {
+    @Operation(summary = "Buscar texto por ID", description = "Busca um texto pelo seu ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Texto encontrado", content = @Content(schema = @Schema(implementation = TextResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Texto não encontrado", content = @Content(schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao buscar o texto", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<TextResponse> findTextById(
+            @Parameter(description = "ID do texto a ser buscado", required = true) @PathVariable Long id) {
         try {
             Optional<Text> text = textService.findById(id);
             return text.map(value -> ResponseEntity.ok(TextMapper.toTextResponse(value)))
@@ -74,7 +107,16 @@ public class TextController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateText(@Valid @PathVariable Long id, @Valid @RequestBody TextRequest textRequest, @RequestParam(defaultValue = "2") int lines) {
+    @Operation(summary = "Atualizar texto", description = "Atualiza um texto existente pelo seu ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Texto atualizado com sucesso", content = @Content(schema = @Schema(implementation = TextResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Número de linhas inválido", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao atualizar o texto", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> updateText(
+            @Parameter(description = "ID do texto a ser atualizado", required = true) @PathVariable Long id,
+            @Parameter(description = "Dados do texto a ser atualizado", required = true) @Valid @RequestBody TextRequest textRequest,
+            @Parameter(description = "Número de linhas", example = "2") @RequestParam(defaultValue = "2") int lines) {
         try {
             if (lines < 1 || lines > 10) {
                 throw new IllegalArgumentException("O número de linhas deve estar entre 1 e 10.");
@@ -90,7 +132,14 @@ public class TextController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteText(@PathVariable Long id) {
+    @Operation(summary = "Deletar texto", description = "Deleta um texto pelo seu ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Texto deletado com sucesso", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "Texto não encontrado", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao deletar o texto", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> deleteText(
+            @Parameter(description = "ID do texto a ser deletado", required = true) @PathVariable Long id) {
         try {
             if(textService.findById(id).isPresent()) {
                 textService.deleteText(id);
