@@ -10,7 +10,7 @@ import java.io.InputStream;
 @Service
 public class TextSummarizer {
 
-    private final SentenceDetectorME sentenceDetector;
+    SentenceDetectorME sentenceDetector;
 
     public TextSummarizer() throws IOException {
         try (InputStream modelIn = getClass().getResourceAsStream("/models/pt-sent.bin")) {
