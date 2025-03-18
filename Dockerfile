@@ -1,24 +1,29 @@
-# Etapa 1: Build com Maven + JDK 17
-FROM maven:3.9.4-eclipse-temurin-17 AS build
+# Etapa de build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+
+# Define diretório de trabalho
 WORKDIR /app
 
-# Copia apenas os arquivos necessários do Maven antes para aproveitar cache
-COPY pom.xml mvnw .mvn/ ./
-RUN chmod +x ./mvnw && ./mvnw dependency:go-offline
-
-# Copia o restante do projeto e gera o JAR
+# Copia os arquivos do projeto
 COPY . .
+
+# Garante permissão ao mvnw
+RUN chmod +x ./mvnw
+
+# Executa o build (sem os testes)
 RUN ./mvnw clean package -DskipTests
 
-# Etapa 2: Imagem final só com JDK 17 para rodar o JAR
-FROM eclipse-temurin:17-jre
+# Etapa de runtime
+FROM eclipse-temurin:17-jdk
+
+# Define diretório de trabalho
 WORKDIR /app
 
-# Copia o JAR construído na etapa anterior
+# Copia o JAR da etapa de build
 COPY --from=build /app/target/*.jar app.jar
 
-# Expõe a porta padrão do Spring Boot
+# Expõe a porta que sua aplicação usa
 EXPOSE 8080
 
-# Comando de execução do app
+# Comando de execução
 ENTRYPOINT ["java", "-jar", "app.jar"]
