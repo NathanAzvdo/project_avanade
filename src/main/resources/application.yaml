@@ -3,9 +3,9 @@ spring:
         name: bootcamp.project
 
     datasource:
-        url: jdbc:postgresql://localhost:25432/npl_project
-        username: ${DB_USER}
-        password: ${DB_PASS}
+        url: ${DATABASE_URL:jdbc:postgresql://localhost:25432/npl_project}
+        username: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
         driver-class-name: org.postgresql.Driver
 
     jpa:
