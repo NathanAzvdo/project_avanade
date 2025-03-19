@@ -14,7 +14,7 @@ COPY .mvn ./.mvn
 RUN chmod +x mvnw
 
 # Construir o aplicativo
-RUN ./mvnw clean package
+RUN ./mvnw clean package -X
 
 # Expor a porta que a aplicação usa (ajuste conforme necessário)
 EXPOSE 8080

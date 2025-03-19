@@ -3,20 +3,24 @@ spring:
         name: bootcamp.project
 
     datasource:
-        url: ${DATABASE_URL:jdbc:postgresql://localhost:25432/npl_project}
-        username: ${POSTGRES_USER}
-        password: ${POSTGRES_PASSWORD}
+        url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+        username: ${PGUSER}
+        password: ${PGPASSWORD}
         driver-class-name: org.postgresql.Driver
 
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         show-sql: true
+        open-in-view: false
+        hibernate:
+            ddl-auto: validate
 
     flyway:
         enabled: true
 
     main:
         allow-bean-definition-overriding: true
+
     springdoc:
         swagger-ui:
             path: /swagger-ui.html
