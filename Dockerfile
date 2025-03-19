@@ -20,4 +20,4 @@ RUN ./mvnw clean package
 EXPOSE 8080
 
 # Comando para executar a aplicação
-CMD ["java", "-jar", "target/nome-do-seu-arquivo.jar"]
+CMD ["java", "-jar", "target/bootcamp.project-0.0.1-SNAPSHOT.jar"]
