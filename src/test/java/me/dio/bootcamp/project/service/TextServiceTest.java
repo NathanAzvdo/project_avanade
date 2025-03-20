@@ -82,8 +82,8 @@ public class TextServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(sampleText.getId(), result.getFirst().getId());
-        assertEquals(sampleText.getText(), result.getFirst().getText());
+        assertEquals(sampleText.getId(), result.get(0).getId());
+        assertEquals(sampleText.getText(), result.get(0).getText());
 
         verify(textRepository).findByTextContainingIgnoreCase(searchText);
     }
