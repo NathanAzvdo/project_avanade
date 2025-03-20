@@ -1,26 +1,3 @@
 spring:
-    application:
-        name: bootcamp.project
-
-    datasource:
-        url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
-        username: ${PGUSER}
-        password: ${PGPASSWORD}
-        driver-class-name: org.postgresql.Driver
-
-    jpa:
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
-        show-sql: true
-        open-in-view: false
-        hibernate:
-            ddl-auto: validate
-
-    flyway:
-        enabled: true
-
-    main:
-        allow-bean-definition-overriding: true
-
-    springdoc:
-        swagger-ui:
-            path: /swagger-ui.html
+  profiles:
+    active: prod
